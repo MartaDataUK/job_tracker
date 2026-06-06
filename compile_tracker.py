@@ -41,7 +41,7 @@ def calculate_job_score(title, desc, location, salary_period=None):
     location_lower = str(location).lower()
     salary_period = str(salary_period).lower() if salary_period is not None and not pd.isna(salary_period) else ""
 
-    # Job title scoring
+   # Job title scoring
     if "analytics engineer" in title_lower:
         score += 30
     elif "data engineer" in title_lower or "product developer" in title_lower:
@@ -53,7 +53,7 @@ def calculate_job_score(title, desc, location, salary_period=None):
 
     is_truncated = desc_lower.endswith("…") or "â€¦" in desc_lower or len(desc_lower) < 500
     if is_truncated and "analytics engineer" in title_lower:
-        score += 15
+        score += 30
 
     # Proper technical keywords
     if re.search(r'\bdbt\b', desc_lower) or "dbt" in title_lower:
@@ -63,11 +63,11 @@ def calculate_job_score(title, desc, location, salary_period=None):
     if re.search(r'\bpython\b', desc_lower):
         score += 5
 
-    if any(word in desc_lower for word in ["git", "version control", "code review", "ci/cd"]):
+    if any(word in desc_lower for word in ["git", "version control", "code review"]):
         score += 5
-    if any(word in desc_lower for word in ["data quality", "testing", "assertion", "lineage"]):
+    if any(word in desc_lower for word in ["data quality", "testing", "lineage"]):
         score += 10
-    if "single source of truth" in desc_lower or "semantic layer" in desc_lower:
+    if "single source of truth" in desc_lower:
         score += 5
     if "autonomy" in desc_lower or "self-starter" in desc_lower or "roadmap" in desc_lower or "independent" in desc_lower:
         score += 5
@@ -77,17 +77,17 @@ def calculate_job_score(title, desc, location, salary_period=None):
         score += 15
     elif any(word in desc_lower for word in ["ecommerce", "e-commerce", "retail", "inventory", "streaming", "media"]):
         score += 12
-    elif any(word in desc_lower for word in ["insurance", "underwriting", "broker", "policy lifecycle"]):
+    elif any(word in desc_lower for word in ["insurance", "broker", "finance", "marketing"]):
         score += 10
 
-    # 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Location Definition For Scoring
+	# Location criteria with nuanced remote work detection
     is_scotland = any(city in location_lower for city in ["edinburgh", "glasgow", "livingston", "dundee", "aberdeen", "scotland"])
     is_fully_remote = "fully remote" in desc_lower or "100% remote" in desc_lower or "fully remote" in location_lower
 
-    # Secondary Priority: Maximum points for local proximity regardless of setup
+    # Core Priority: Maximum points for local proximity regardless of setup
     if is_scotland:
         score += 25
-    # Core Priority: Strong baseline boost for out-of-region elite remote roles
+    # Secondary Priority: Strong baseline boost for out-of-region elite remote roles
     elif is_fully_remote:
         score += 35
 
@@ -111,8 +111,8 @@ def calculate_job_score(title, desc, location, salary_period=None):
             if salary_period == "daily":
                 score += 15
         else:
-            # Reward premium permanent structures so they don't get buried by contract points
-            is_high_tier_perm = any(phrase in desc_lower for phrase in ["£70,000", "£75,000", "£80,000", "£85,000", "£90,000", "70k", "75k", "80k", "85k", "90k"])
+            # COUNTER-WEIGHT: Reward premium permanent structures so they don't get buried by contract points
+            is_high_tier_perm = any(phrase in desc_lower for phrase in ["£60,000", "£65,000", "£70,000", "£75,000", "60k", "65k", "70k", "75k"])
             if is_high_tier_perm or any(term in desc_lower for term in ["permanent position", "bonus scheme", "private dental", "annual bonus"]):
                 score += 30
         legacy_or_wrong_cloud_stack = [
