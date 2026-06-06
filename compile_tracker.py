@@ -84,10 +84,10 @@ def calculate_job_score(title, desc, location, salary_period=None):
     is_scotland = any(city in location_lower for city in ["edinburgh", "glasgow", "livingston", "dundee", "aberdeen", "scotland"])
     is_fully_remote = "fully remote" in desc_lower or "100% remote" in desc_lower or "fully remote" in location_lower
 
-    # Core Priority: Maximum points for local proximity regardless of setup
+    # Secondary Priority: Maximum points for local proximity regardless of setup
     if is_scotland:
         score += 25
-    # Secondary Priority: Strong baseline boost for out-of-region elite remote roles
+    # Core Priority: Strong baseline boost for out-of-region elite remote roles
     elif is_fully_remote:
         score += 35
 
@@ -111,7 +111,7 @@ def calculate_job_score(title, desc, location, salary_period=None):
             if salary_period == "daily":
                 score += 15
         else:
-            # 🌍 COUNTER-WEIGHT: Reward premium permanent structures so they don't get buried by contract points
+            # Reward premium permanent structures so they don't get buried by contract points
             is_high_tier_perm = any(phrase in desc_lower for phrase in ["£70,000", "£75,000", "£80,000", "£85,000", "£90,000", "70k", "75k", "80k", "85k", "90k"])
             if is_high_tier_perm or any(term in desc_lower for term in ["permanent position", "bonus scheme", "private dental", "annual bonus"]):
                 score += 30
@@ -130,7 +130,7 @@ def compile_job_tracker_pipeline():
     existing_progressed = pd.DataFrame()
     tracked_links = set()
 
-    # 🛡️ DEEP HYPERLINK LOADER: Extract actual target URLs hidden behind 'Apply' cells
+    # Extract actual target URLs hidden behind 'Apply' cells
     if os.path.exists(excel_output):
         try:
             # Read metadata strings cleanly using pandas
@@ -153,9 +153,9 @@ def compile_job_tracker_pipeline():
                                 tracked_links.add(str(cell.hyperlink.target).strip())
                             elif cell.value and str(cell.value).startswith("http"):
                                 tracked_links.add(str(cell.value).strip())
-            print(f"📖 Loaded existing tracker progress. Found {len(tracked_links)} distinct links tracked so far.")
+            print(f"Loaded existing tracker progress. Found {len(tracked_links)} distinct links tracked so far.")
         except Exception as e:
-            print(f"ℹ️ Note: Couldn't parse existing tracking sheets ({e}). Starting clean.")
+            print(f"Note: Couldn't parse existing tracking sheets ({e}). Starting clean.")
 
     source_files = {
         "Linkedin": "linkedin_and_jobserve_jobs.csv",
@@ -179,7 +179,7 @@ def compile_job_tracker_pipeline():
             try:
                 temp_df = pd.read_csv(filename)
                 if temp_df.empty:
-                    print(f"ℹ️ {filename} is empty. Skipping...")
+                    print(f" {filename} is empty. Skipping...")
                     continue
                 for col in unified_columns:
                     if col not in temp_df.columns:
@@ -187,24 +187,24 @@ def compile_job_tracker_pipeline():
                 temp_df = temp_df[unified_columns]
                 temp_df["platform"] = platform
                 compiled_dfs.append(temp_df)
-                print(f"✅ Loaded rows from {platform} ({filename})")
+                print(f"Loaded rows from {platform} ({filename})")
             except Exception as e:
-                print(f"⚠️ Error reading source {filename}: {e}")
+                print(f"Error reading source {filename}: {e}")
         else:
             print(f"ℹ️ {filename} not found yet. Skipping safely...")
 
     if not compiled_dfs:
-        print("❌ Error: No new data sources found to compile.")
+        print("Error:No new data sources found to compile.")
         return
 
     master_df = pd.concat(compiled_dfs, ignore_index=True)
     master_df = master_df.drop_duplicates(subset=["job_link"], keep="first")
 
-    # ✂️ Drop incoming rows before processing if the URL already exists anywhere in Excel
+    # Drop incoming rows before processing if the URL already exists anywhere in Excel
     if tracked_links:
         master_df = master_df[~master_df["job_link"].astype(str).str.strip().isin(tracked_links)]
 
-    print("🧹 Running parsing layout artifact cleaner across core dataset...")
+    print("Running parsing layout artifact cleaner across core dataset...")
     master_df["job_description"] = master_df["job_description"].apply(clean_scraped_description)
 
     filtered_rows = []
@@ -266,7 +266,7 @@ def compile_job_tracker_pipeline():
         else:
             continue
 
-    # 🤝 SYSTEM MERGE PROCESSOR
+    # SYSTEM MERGE PROCESSOR
     if filtered_rows:
         new_scraped_df = pd.DataFrame(filtered_rows).reset_index(drop=True)
         new_scraped_df["Score"] = new_scraped_df.apply(
@@ -293,13 +293,13 @@ def compile_job_tracker_pipeline():
         todo_df = todo_df.sort_values(by="Score", ascending=False).reset_index(drop=True)
         new_unique_items_count = len(todo_df) - len(existing_todo)
 
-        print(f"\n✨ --- Staging Merge Diagnostics ---")
-        print(f"📥 Total incoming jobs processed through criteria filters: {total_scraped_items}")
-        print(f"🚀 Successfully appended to To Do sheet: +{max(0, new_unique_items_count)} brand new leads!")
+        print(f"\n --- Staging Merge Diagnostics ---")
+        print(f" Total incoming jobs processed through criteria filters: {total_scraped_items}")
+        print(f" Successfully appended to To Do sheet: +{max(0, new_unique_items_count)} brand new leads!")
         print(f"------------------------------------\n")
     else:
         # 💡 Fallback if no fresh scrapers generated new targets
-        print("\nℹ️ No brand new items found via live scraper engines today.")
+        print("\n No brand new items found via live scraper engines today.")
         todo_df = existing_todo if not existing_todo.empty else pd.DataFrame(columns=column_order)
         if not todo_df.empty:
             todo_df = todo_df.reindex(columns=column_order)
@@ -317,9 +317,9 @@ def compile_job_tracker_pipeline():
     wb.remove(wb.active)
 
     sheets_config = [
-        ("📥 Jobs To Do", todo_df),
-        ("🚀 Applied", applied_df),
-        ("📈 Progressed", progressed_df)
+        (" Jobs To Do", todo_df),
+        (" Applied", applied_df),
+        (" Progressed", progressed_df)
     ]
 
     header_fill = PatternFill(start_color="2C3E50", end_color="2C3E50", fill_type="solid")
@@ -370,7 +370,7 @@ def compile_job_tracker_pipeline():
                             # Pull target url fallback from dataframe context if openpyxl text is parsed
                             raw_target = df_source.iloc[r_idx - 2]["job_link"] if link_val == "Apply" else link_val
 
-                            # 🎯 FIX: Keep the actual raw URL visible instead of "Apply"
+                            # FIX: Keep the actual raw URL visible instead of "Apply"
                             cell.value = raw_target
                             cell.hyperlink = raw_target
                             cell.font = link_font

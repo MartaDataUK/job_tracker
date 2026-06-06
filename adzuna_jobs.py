@@ -69,7 +69,7 @@ def fetch_full_description_from_web(url):
 
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # TARGET IDENTIFICATION: Common container classes for job descriptions
+        # Common container classes for job descriptions
         target_selectors = [
             {"class_": "job-description"}, {"class_": "jobDescription"},
             {"id": "job-description"}, {"class_": "description__text"},
@@ -132,7 +132,7 @@ def run_adzuna_matrix_pipeline():
         total_new_rows_session = 0
 
         for location in target_locations:
-            print(f"\n🏹 ========================================================")
+            print(f" ========================================================")
             print(f"🇬🇧 DEEP SWEEPING ADZUNA REGION: [ {location.upper()}, UK ]")
             print(f"==========================================================")
 
@@ -143,7 +143,7 @@ def run_adzuna_matrix_pipeline():
                     query_params = {
                         "app_id": ADZUNA_APP_ID,
                         "app_key": ADZUNA_APP_KEY,
-                        "what": query,  # Removed extra double quotes to improve hit rates
+                        "what": query,
                         "where": location,
                         "results_per_page": 20,
                         "content-type": "application/json",
@@ -158,7 +158,7 @@ def run_adzuna_matrix_pipeline():
                         raw_data = response.json()
                         listings = raw_data.get("results", [])
                     except Exception as e:
-                        print(f"    ⚠️ Adzuna network slice faulted ({e}). Skipping page.")
+                        print(f"Adzuna network slice faulted ({e}). Skipping page.")
                         continue
 
                     if len(listings) == 0:
@@ -175,7 +175,7 @@ def run_adzuna_matrix_pipeline():
                         job_title_clean = clean_html(job.get("title", ""))
                         title_lower = job_title_clean.lower()
 
-                        # 🆕 ADD THESE LINES HERE TO CAPTURE THE DATE POSTED:
+
                         raw_created_date = job.get("created", "")  # e.g., "2026-06-05T14:30:22Z"
                         if raw_created_date and len(raw_created_date) >= 10:
                             cleaned_posted_date = raw_created_date[:10]  # Cuts it down cleanly to "2026-06-05"
@@ -189,7 +189,7 @@ def run_adzuna_matrix_pipeline():
 
                         api_snippet = clean_html(job.get("description")) or "Open link to read requirements."
 
-                        print(f"    📥 Found unique role: '{job_title_clean[:35]}...' -> Enriching...")
+                        print(f"Found unique role: '{job_title_clean[:35]}...' -> Enriching...")
 
                         full_description = fetch_full_description_from_web(job_link_clean)
 
@@ -199,10 +199,10 @@ def run_adzuna_matrix_pipeline():
                         # Hybrid Fallback Logic (Keeps 100% of rows)
                         if not cleaned_scrape or len(scraped_test) < 150:
                             final_description = api_snippet
-                            print("      箱️ Web text unavailable. Using Adzuna preview snippet safely.")
+                            print("Web text unavailable. Using Adzuna preview snippet safely.")
                         else:
                             final_description = cleaned_scrape
-                            print("      ✅ Rich web text successfully cleaned and kept!")
+                            print("Rich web text successfully cleaned and kept!")
 
                         company_obj = job.get("company") or {}
                         location_obj = job.get("location") or {}
@@ -233,7 +233,7 @@ def run_adzuna_matrix_pipeline():
 
                     time.sleep(2.0)
 
-    print(f"\n🏁 Complete! Deep extracted {total_new_rows_session} full-length records into staging.")
+    print(f"\n Complete! Deep extracted {total_new_rows_session} full-length records into staging.")
 
 if __name__ == "__main__":
     run_adzuna_matrix_pipeline()

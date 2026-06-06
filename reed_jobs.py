@@ -23,7 +23,7 @@ def run_reed_pipeline():
     url = "https://www.reed.co.uk/api/1.0/search"
     output_csv = "reed_jobs.csv" # Standardized Naming
 
-    # 🔑 REED API KEY (Leave password blank as Reed handles auth via Username only)
+    # REED API KEY (Leave password blank as Reed handles auth via Username only)
     REED_API_KEY = "YOUR_API_KEY_HERE"
 
     unified_columns = [

@@ -59,7 +59,7 @@ def get_existing_job_links(csv_filepath):
                 if link:
                     existing_links.add(link.strip())
     except Exception as e:
-        print(f"⚠️ Note: Error reading existing CSV links ({e}). Starting fresh.")
+        print(f" Note: Error reading existing CSV links ({e}). Starting fresh.")
     return existing_links
 
 def run_jobspy_pipeline():
@@ -78,8 +78,8 @@ def run_jobspy_pipeline():
 
     seen_linkedin_links = get_existing_job_links(linkedin_csv)
 
-    print(f"📊 Dual-Engine Contract Aggregator Initialized.")
-    print(f"   ↳ Master Registry: {len(seen_linkedin_links)} existing leads cached.")
+    print(f"Dual-Engine Contract Aggregator Initialized.")
+    print(f" Master Registry: {len(seen_linkedin_links)} existing leads cached.")
 
     if not os.path.exists(linkedin_csv):
         with open(linkedin_csv, mode="w", newline="", encoding="utf-8") as f:
@@ -89,7 +89,7 @@ def run_jobspy_pipeline():
         li_writer = csv.DictWriter(li_f, fieldnames=unified_columns)
 
         for location in target_locations:
-            print(f"\n🏹 ========================================================")
+            print(f"\n ========================================================")
             print(f"🇬🇧 JOBSPY SWEEPING MATRIX BLOCK: [ {location.upper()}, UK ]")
             print(f"==========================================================")
 
@@ -112,7 +112,7 @@ def run_jobspy_pipeline():
                 except Exception as e:
                     print(f"   ⚠️ Dual-vector stream faulted ({e}). Falling back strictly to LinkedIn...")
 
-                    # 💡 FIX: Nesting this block inside the exception ensures it only runs if the primary dual-sweep fails!
+                    # FIX: Nesting this block inside the exception ensures it only runs if the primary dual-sweep fails!
                     try:
                         time.sleep(2)
                         jobs_df = scrape_jobs(
@@ -123,14 +123,14 @@ def run_jobspy_pipeline():
                             hours_old=48,
                             country_enum="uk",
                             linkedin_fetch_description=True,
-                            linkedin_cookies={"li_at": "AQEDAR-Lma4D15amAAABnW4-afsAAAGenPxNl04AnmZDTddBsaFldGHVmDnm8EQ5ReDcJpG-yMf6foyyu-0eJ2O7AeY0CISOiQJFfncMPY_ngYq_yj3LWG5qkrtn_EzKa8JntNQOTSdsUtS-QswPgbv2"}
+                            linkedin_cookies={"li_at": "add your linkedin coockie string here"}
                         )
                     except Exception as fatal_e:
-                        print(f"   ❌ Critical failure on backup matrix block ({fatal_e}). Skipping sector entirely.")
+                        print(f"Critical failure on backup matrix block ({fatal_e}). Skipping sector entirely.")
                         continue
 
                 if jobs_df is None or jobs_df.empty:
-                    print("    🔍 Zero matching records pulled from vector array.")
+                    print(" Zero matching records pulled from vector array.")
                     continue
 
                 records_added = 0
@@ -197,11 +197,11 @@ def run_jobspy_pipeline():
                     seen_linkedin_links.add(job_link)
                     records_added += 1
 
-                print(f"    📥 Sector Complete -> Saved New Entries: +{records_added}")
+                print(f" Sector Complete -> Saved New Entries: +{records_added}")
 
                 # Defensive pacing delay to preserve pipeline automation health
                 sleep_duration = random.uniform(14.0, 26.0)
-                print(f"    ⏳ Cooling down data vectors for {sleep_duration:.1f}s...")
+                print(f" Cooling down data vectors for {sleep_duration:.1f}s...")
                 time.sleep(sleep_duration)
 
 if __name__ == "__main__":
