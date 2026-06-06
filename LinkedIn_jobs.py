@@ -107,7 +107,7 @@ def run_jobspy_pipeline():
                         hours_old=48,
                         country_enum="uk",
                         linkedin_fetch_description=True,
-                        linkedin_cookies={"li_at": "AQEDAR-Lma4D15amAAABnW4-afsAAAGenPxNl04AnmZDTddBsaFldGHVmDnm8EQ5ReDcJpG-yMf6foyyu-0eJ2O7AeY0CISOiQJFfncMPY_ngYq_yj3LWG5qkrtn_EzKa8JntNQOTSdsUtS-QswPgbv2"}
+                        linkedin_cookies={"li_at": "you need your own cookie string here"}
                     )
                 except Exception as e:
                     print(f"   ⚠️ Dual-vector stream faulted ({e}). Falling back strictly to LinkedIn...")
