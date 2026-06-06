@@ -106,8 +106,8 @@ def run_adzuna_matrix_pipeline():
         "job_description", "employer_name", "employer_rating", "job_posted_date"
     ]
 
-    ADZUNA_APP_ID = "652c708e"
-    ADZUNA_APP_KEY = "d2b202a442e62c94f038b9f8421ac680"
+    ADZUNA_APP_ID = "YOUR_APP_ID"
+    ADZUNA_APP_KEY = "YOUR_APP_KEY"
 
     target_locations = [
         "Edinburgh", "Glasgow", "Livingston", "Dundee", "Aberdeen",
