@@ -24,7 +24,7 @@ def run_reed_pipeline():
     output_csv = "reed_jobs.csv" # Standardized Naming
 
     # 🔑 REED API KEY (Leave password blank as Reed handles auth via Username only)
-    REED_API_KEY = "bcc61ceb-463d-4f2f-944e-d170717896b0"
+    REED_API_KEY = "YOUR_API_KEY_HERE"
 
     unified_columns = [
         "job_link", "platform", "job_title", "location", "job_employment_type",
