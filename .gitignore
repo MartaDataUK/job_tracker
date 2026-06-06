@@ -1,1 +1,21 @@
-﻿reed_jobs.py
+# ==========================================
+# Custom Job Tracker Protection Rules
+# ==========================================
+# Ignore local Excel spreadsheets, CSVs, and active trackers
+*.xlsx
+*.csv
+
+# Ignore Python virtual environments and local package dependencies
+venv/
+.venv/
+env/
+
+# Ignore Python caches and temporary operational files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Ignore local environment configurations/API keys
+.env
